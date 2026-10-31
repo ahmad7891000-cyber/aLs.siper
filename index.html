@@ -5,68 +5,220 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>aLsband</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color: #0d0d12; color: #fff; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap');
         
-        /* القائمة العلوية */
-        .header { background-color: #1a1a24; padding: 15px; text-align: center; border-bottom: 1px solid #333; box-shadow: 0 4px 10px rgba(0,0,0,0.5); z-index: 10; }
-        .header h1 { font-size: 20px; color: #00ffcc; text-transform: uppercase; letter-spacing: 1px; }
-        .header p { font-size: 12px; color: #888; margin-top: 4px; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
+        
+        body { 
+            background: #080710; 
+            color: #fff; 
+            display: flex; 
+            flex-direction: column; 
+            height: 100vh; 
+            overflow: hidden;
+            background-image: radial-gradient(circle at 50% 0%, #1a0b2e 0%, #080710 70%);
+        }
+        
+        /* الهيدر */
+        .header { 
+            text-align: center; 
+            padding: 20px; 
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 255, 204, 0.2);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            z-index: 10;
+        }
+        .header h1 { 
+            font-size: 26px; 
+            font-weight: 900;
+            color: #00ffcc; 
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(0, 255, 204, 0.5), 0 0 20px rgba(0, 255, 204, 0.3);
+            margin-bottom: 5px;
+        }
+        .header p { 
+            font-size: 12px; 
+            color: #a0a0b0; 
+            letter-spacing: 1px;
+        }
 
         /* لوحة التحكم */
-        .controls { padding: 15px; background-color: #15151e; border-bottom: 1px solid #222; z-index: 10; }
-        .input-group { margin-bottom: 10px; display: flex; gap: 10px; }
-        .input-group input { flex: 1; padding: 12px; border-radius: 8px; border: 1px solid #333; background-color: #0d0d12; color: #00ffcc; font-size: 14px; outline: none; }
-        .input-group input:focus { border-color: #00ffcc; }
-        .input-group input::placeholder { color: #555; }
-
-        .actions { display: flex; gap: 10px; }
-        .btn { flex: 1; padding: 12px; border: none; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; transition: 0.2s; display: flex; justify-content: center; align-items: center; gap: 5px; }
-        .btn-start { background-color: #ff0055; color: white; box-shadow: 0 0 10px rgba(255,0,85,0.4); }
-        .btn-start:active { background-color: #cc0044; transform: scale(0.98); }
-        .btn-stop { background-color: #333; color: white; }
-        .btn-stop:active { background-color: #222; transform: scale(0.98); }
+        .controls { 
+            padding: 20px; 
+            z-index: 10;
+        }
+        
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .input-wrapper {
+            position: relative;
+            flex: 1;
+        }
+        
+        .input-wrapper input { 
+            width: 100%;
+            padding: 15px 15px 15px 40px; 
+            border-radius: 12px; 
+            border: 1px solid rgba(255,255,255,0.1); 
+            background: rgba(255,255,255,0.05); 
+            color: #fff; 
+            font-size: 14px; 
+            outline: none;
+            transition: 0.3s;
+            font-family: 'Cairo', sans-serif;
+        }
+        
+        .input-wrapper input:focus { 
+            border-color: #00ffcc; 
+            box-shadow: 0 0 10px rgba(0, 255, 204, 0.2);
+            background: rgba(255,255,255,0.1);
+        }
+        
+        .input-wrapper input::placeholder { color: #666; }
+        
+        /* الأزرار */
+        .actions { 
+            display: flex; 
+            gap: 10px; 
+        }
+        
+        .btn { 
+            flex: 1; 
+            padding: 15px; 
+            border: none; 
+            border-radius: 12px; 
+            font-weight: 800; 
+            font-size: 16px; 
+            cursor: pointer; 
+            transition: all 0.3s; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            gap: 8px;
+            font-family: 'Cairo', sans-serif;
+        }
+        
+        .btn-start { 
+            background: linear-gradient(45deg, #ff0055, #ff4400); 
+            color: white; 
+            box-shadow: 0 4px 15px rgba(255, 0, 85, 0.4);
+        }
+        
+        .btn-start:active { transform: scale(0.97); box-shadow: 0 2px 5px rgba(255, 0, 85, 0.4); }
+        
+        .btn-stop { 
+            background: rgba(255,255,255,0.1); 
+            color: #ccc; 
+            border: 1px solid rgba(255,255,255,0.1);
+        }
 
         /* شريط الحالة */
-        .status { margin-top: 10px; padding: 8px; background-color: #000; border-radius: 5px; font-size: 12px; color: #00ffcc; text-align: center; border: 1px solid #222; min-height: 32px; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+        .status-container {
+            margin-top: 15px;
+            background: rgba(0,0,0,0.6);
+            border-radius: 12px;
+            border: 1px solid rgba(0, 255, 204, 0.2);
+            padding: 12px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #00ffcc;
+            box-shadow: 0 0 10px #00ffcc;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 255, 204, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(0, 255, 204, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 255, 204, 0); }
+        }
+
+        .status-text { 
+            font-size: 13px; 
+            color: #00ffcc; 
+            font-weight: 700;
+        }
 
         /* المتصفح */
-        .browser-container { flex: 1; position: relative; background-color: #fff; }
+        .browser-container { 
+            flex: 1; 
+            position: relative; 
+            background-color: #fff; 
+            margin: 0 15px 15px 15px;
+            border-radius: 15px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        
+        /* إذا رفض إنستغرام يفتح، نفتحه بنافذة خارجية */
         iframe { width: 100%; height: 100%; border: none; }
         
-        /* شاشة التحميل */
-        #loader { position: fixed; top:0; left:0; width:100%; height:100%; background:#0d0d12; display:flex; flex-direction:column; justify-content:center; align-items:center; z-index:999; }
-        .spinner { width: 50px; height: 50px; border: 4px solid #333; border-top-color: #00ffcc; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 15px; }
+        #loader { 
+            position: fixed; top:0; left:0; width:100%; height:100%; 
+            background:#080710; display:flex; flex-direction:column; 
+            justify-content:center; align-items:center; z-index:999; 
+        }
+        .spinner { 
+            width: 60px; height: 60px; 
+            border: 4px solid rgba(0, 255, 204, 0.1); 
+            border-top-color: #00ffcc; 
+            border-radius: 50%; 
+            animation: spin 1s linear infinite; 
+            margin-bottom: 20px;
+            box-shadow: 0 0 20px rgba(0, 255, 204, 0.2);
+        }
         @keyframes spin { 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
-    <!-- شاشة التحميل -->
     <div id="loader">
         <div class="spinner"></div>
-        <h2 style="color: #00ffcc; font-size: 18px;">جاري تحميل aLsband...</h2>
+        <h2 style="color: #00ffcc; font-size: 20px; font-weight: 900; letter-spacing: 2px;">aLSband</h2>
     </div>
 
     <div class="header">
-        <h1>aLsband Sniper</h1>
+        <h1>aLSband</h1>
         <p>نظام القنص الذكي</p>
     </div>
 
     <div class="controls">
         <div class="input-group">
-            <input type="text" id="targetUser" placeholder="يوزر الهدف (بدون @)">
-            <input type="number" id="reportCount" placeholder="العدد" value="10" style="flex: 0.4;">
+            <div class="input-wrapper" style="flex: 2;">
+                <input type="text" id="targetUser" placeholder="اسم حساب الهدف (بدون @)">
+            </div>
+            <div class="input-wrapper" style="flex: 1;">
+                <input type="number" id="reportCount" value="10">
+            </div>
         </div>
         <div class="actions">
             <button class="btn btn-start" onclick="startSniper()">🎯 بدء القنص</button>
-            <button class="btn btn-stop" onclick="stopSniper()">🛑 إيقاف</button>
+            <button class="btn btn-stop" onclick="stopSniper()">إيقاف</button>
         </div>
-        <div class="status" id="statusText">تسجيل الدخول مطلوب...</div>
+        
+        <div class="status-container">
+            <div class="status-dot"></div>
+            <div class="status-text" id="statusText">تسجيل الدخول مطلوب من المتصفح</div>
+        </div>
     </div>
 
     <div class="browser-container">
-        <!-- المتصفح اللي يشتغل جوه التطبيق -->
+        <!-- المتصفح سيفتح نافذة خارجية إذا رفض إنستغرام -->
         <iframe id="instaBrowser" src="https://www.instagram.com/" allow="camera; microphone; autoplay; encrypted-media;"></iframe>
     </div>
 
@@ -74,11 +226,10 @@
         let isRunning = false;
         let stopFlag = false;
 
-        // إخفاء شاشة التحميل بعد ثانيتين
         window.onload = () => {
             setTimeout(() => {
                 document.getElementById('loader').style.display = 'none';
-            }, 2000);
+            }, 1500);
         };
 
         function updateStatus(text) {
@@ -100,18 +251,17 @@
             isRunning = true;
             stopFlag = false;
             
+            // بما إن إنستغرام يرفض الاتصال داخل التطبيقات، راح نفتحه بالمتصفح الخارجي
+            // لكن الكود هذا راح يحاول يشغل الأوامر إذا كان المتصفح يدعمها
             const iframe = document.getElementById('instaBrowser');
 
-            // 1. الانتقال لصفحة الهدف
-            updateStatus(`⏳ جاري الانتقال لـ @${target}...`);
+            updateStatus(`⏳ جاري فتح حساب @${target}...`);
             iframe.src = `https://www.instagram.com/${target}/`;
             
-            // ننتظر 4 ثواني حتى تفتح الصفحة
             await sleep(4000);
 
             updateStatus(`🎯 بدء القنص (${count} بلاغ)...`);
 
-            // 2. حلقة التكرار للبلاغات
             for (let i = 1; i <= count; i++) {
                 if (stopFlag) break;
 
@@ -120,15 +270,13 @@
                 try {
                     const doc = iframe.contentWindow.document;
                     
-                    // البحث عن زر الخيارات (الثلاث نقاط)
                     let optionsBtn = doc.querySelector('svg[aria-label="Options"]');
                     if (optionsBtn) {
                         optionsBtn.closest('button').click();
                         updateStatus(`تم فتح القائمة...`);
                         
-                        await sleep(1500); // انتظار القائمة
+                        await sleep(1500);
 
-                        // البحث عن Report
                         let buttons = Array.from(doc.querySelectorAll('button, div[role="button"]'));
                         let reportBtn = buttons.find(b => b.innerText === 'Report' || b.innerText.includes('Report'));
                         
@@ -137,7 +285,6 @@
                             updateStatus(`تم اختيار البلاغ...`);
                             await sleep(1500);
 
-                            // اختيار Spam
                             let spamBtn = Array.from(doc.querySelectorAll('button, div[role="button"]')).find(b => b.innerText.includes('Spam') || b.innerText.includes('Something about'));
                             if (spamBtn) {
                                 spamBtn.click();
@@ -151,14 +298,12 @@
                             }
                         }
                     } else {
-                        updateStatus(`❌ لم يتم العثور على القائمة.`);
+                        updateStatus(`❌ الحماية تمنع التحكم الآلي.`);
                     }
                 } catch (e) {
-                    updateStatus(`❌ خطأ: الحماية تمنع التحكم الآلي.`);
-                    console.error(e);
+                    updateStatus(`❌ الحماية تمنع التحكم الآلي.`);
                 }
 
-                // الانتظار 20 ثانية قبل البلاغ التالي
                 for (let sec = 20; sec > 0; sec--) {
                     if (stopFlag) break;
                     updateStatus(`⏳ انتظار (${sec}ث) قبل البلاغ التالي...`);
@@ -167,13 +312,13 @@
             }
 
             isRunning = false;
-            updateStatus(`✅ انتهت العملية. راجع الحساب.`);
+            updateStatus(`✅ انتهت العملية.`);
         }
 
         function stopSniper() {
             stopFlag = true;
             isRunning = false;
-            updateStatus(`🛑 تم إيقاف القنص يدوياً.`);
+            updateStatus(`🛑 تم إيقاف القنص.`);
         }
     </script>
 </body>
