@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>aLsband</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #0d0d12; color: #fff; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+        
+        /* القائمة العلوية */
+        .header { background-color: #1a1a24; padding: 15px; text-align: center; border-bottom: 1px solid #333; box-shadow: 0 4px 10px rgba(0,0,0,0.5); z-index: 10; }
+        .header h1 { font-size: 20px; color: #00ffcc; text-transform: uppercase; letter-spacing: 1px; }
+        .header p { font-size: 12px; color: #888; margin-top: 4px; }
+
+        /* لوحة التحكم */
+        .controls { padding: 15px; background-color: #15151e; border-bottom: 1px solid #222; z-index: 10; }
+        .input-group { margin-bottom: 10px; display: flex; gap: 10px; }
+        .input-group input { flex: 1; padding: 12px; border-radius: 8px; border: 1px solid #333; background-color: #0d0d12; color: #00ffcc; font-size: 14px; outline: none; }
+        .input-group input:focus { border-color: #00ffcc; }
+        .input-group input::placeholder { color: #555; }
+
+        .actions { display: flex; gap: 10px; }
+        .btn { flex: 1; padding: 12px; border: none; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; transition: 0.2s; display: flex; justify-content: center; align-items: center; gap: 5px; }
+        .btn-start { background-color: #ff0055; color: white; box-shadow: 0 0 10px rgba(255,0,85,0.4); }
+        .btn-start:active { background-color: #cc0044; transform: scale(0.98); }
+        .btn-stop { background-color: #333; color: white; }
+        .btn-stop:active { background-color: #222; transform: scale(0.98); }
+
+        /* شريط الحالة */
+        .status { margin-top: 10px; padding: 8px; background-color: #000; border-radius: 5px; font-size: 12px; color: #00ffcc; text-align: center; border: 1px solid #222; min-height: 32px; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+
+        /* المتصفح */
+        .browser-container { flex: 1; position: relative; background-color: #fff; }
+        iframe { width: 100%; height: 100%; border: none; }
+        
+        /* شاشة التحميل */
+        #loader { position: fixed; top:0; left:0; width:100%; height:100%; background:#0d0d12; display:flex; flex-direction:column; justify-content:center; align-items:center; z-index:999; }
+        .spinner { width: 50px; height: 50px; border: 4px solid #333; border-top-color: #00ffcc; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 15px; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+    <!-- شاشة التحميل -->
+    <div id="loader">
+        <div class="spinner"></div>
+        <h2 style="color: #00ffcc; font-size: 18px;">جاري تحميل aLsband...</h2>
+    </div>
+
+    <div class="header">
+        <h1>aLsband Sniper</h1>
+        <p>نظام القنص الذكي</p>
+    </div>
+
+    <div class="controls">
+        <div class="input-group">
+            <input type="text" id="targetUser" placeholder="يوزر الهدف (بدون @)">
+            <input type="number" id="reportCount" placeholder="العدد" value="10" style="flex: 0.4;">
+        </div>
+        <div class="actions">
+            <button class="btn btn-start" onclick="startSniper()">🎯 بدء القنص</button>
+            <button class="btn btn-stop" onclick="stopSniper()">🛑 إيقاف</button>
+        </div>
+        <div class="status" id="statusText">تسجيل الدخول مطلوب...</div>
+    </div>
+
+    <div class="browser-container">
+        <!-- المتصفح اللي يشتغل جوه التطبيق -->
+        <iframe id="instaBrowser" src="https://www.instagram.com/" allow="camera; microphone; autoplay; encrypted-media;"></iframe>
+    </div>
+
+    <script>
+        let isRunning = false;
+        let stopFlag = false;
+
+        // إخفاء شاشة التحميل بعد ثانيتين
+        window.onload = () => {
+            setTimeout(() => {
+                document.getElementById('loader').style.display = 'none';
+            }, 2000);
+        };
+
+        function updateStatus(text) {
+            document.getElementById('statusText').innerText = text;
+        }
+
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        async function startSniper() {
+            if (isRunning) return alert("هناك عملية قنص قيد التشغيل بالفعل!");
+            
+            const target = document.getElementById('targetUser').value.trim().replace('@', '');
+            const count = parseInt(document.getElementById('reportCount').value) || 10;
+
+            if (!target) return alert("الرجاء كتابة يوزر الهدف!");
+
+            isRunning = true;
+            stopFlag = false;
+            
+            const iframe = document.getElementById('instaBrowser');
+
+            // 1. الانتقال لصفحة الهدف
+            updateStatus(`⏳ جاري الانتقال لـ @${target}...`);
+            iframe.src = `https://www.instagram.com/${target}/`;
+            
+            // ننتظر 4 ثواني حتى تفتح الصفحة
+            await sleep(4000);
+
+            updateStatus(`🎯 بدء القنص (${count} بلاغ)...`);
+
+            // 2. حلقة التكرار للبلاغات
+            for (let i = 1; i <= count; i++) {
+                if (stopFlag) break;
+
+                updateStatus(`💥 إرسال البلاغ ${i} من ${count}...`);
+
+                try {
+                    const doc = iframe.contentWindow.document;
+                    
+                    // البحث عن زر الخيارات (الثلاث نقاط)
+                    let optionsBtn = doc.querySelector('svg[aria-label="Options"]');
+                    if (optionsBtn) {
+                        optionsBtn.closest('button').click();
+                        updateStatus(`تم فتح القائمة...`);
+                        
+                        await sleep(1500); // انتظار القائمة
+
+                        // البحث عن Report
+                        let buttons = Array.from(doc.querySelectorAll('button, div[role="button"]'));
+                        let reportBtn = buttons.find(b => b.innerText === 'Report' || b.innerText.includes('Report'));
+                        
+                        if (reportBtn) {
+                            reportBtn.click();
+                            updateStatus(`تم اختيار البلاغ...`);
+                            await sleep(1500);
+
+                            // اختيار Spam
+                            let spamBtn = Array.from(doc.querySelectorAll('button, div[role="button"]')).find(b => b.innerText.includes('Spam') || b.innerText.includes('Something about'));
+                            if (spamBtn) {
+                                spamBtn.click();
+                                await sleep(1000);
+                                
+                                let submitBtn = Array.from(doc.querySelectorAll('button, div[role="button"]')).find(b => b.innerText === 'Submit' || b.innerText === 'Done');
+                                if (submitBtn) {
+                                    submitBtn.click();
+                                    updateStatus(`✅ تم إرسال البلاغ ${i}`);
+                                }
+                            }
+                        }
+                    } else {
+                        updateStatus(`❌ لم يتم العثور على القائمة.`);
+                    }
+                } catch (e) {
+                    updateStatus(`❌ خطأ: الحماية تمنع التحكم الآلي.`);
+                    console.error(e);
+                }
+
+                // الانتظار 20 ثانية قبل البلاغ التالي
+                for (let sec = 20; sec > 0; sec--) {
+                    if (stopFlag) break;
+                    updateStatus(`⏳ انتظار (${sec}ث) قبل البلاغ التالي...`);
+                    await sleep(1000);
+                }
+            }
+
+            isRunning = false;
+            updateStatus(`✅ انتهت العملية. راجع الحساب.`);
+        }
+
+        function stopSniper() {
+            stopFlag = true;
+            isRunning = false;
+            updateStatus(`🛑 تم إيقاف القنص يدوياً.`);
+        }
+    </script>
+</body>
+</html>
