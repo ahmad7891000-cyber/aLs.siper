@@ -3,77 +3,242 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>aLsband Sniper</title>
+    <title>aLs band</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #050505; --card: #111111; --primary: #00ffcc; --danger: #ff0055; --text: #ffffff; --muted: #888888; --border: #333333;
+            --bg: #000000;
+            --card: #111111;
+            --primary: #00ffcc;
+            --danger: #ff0055;
+            --text: #ffffff;
+            --muted: #888888;
+            --border: #222222;
         }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
-        body { background-color: var(--bg); color: var(--text); height: 100vh; display: flex; flex-direction: column; overflow: hidden; background: radial-gradient(circle at 50% 0%, #0a1c1a 0%, #050505 70%); }
 
-        .header { text-align: center; padding: 15px; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(0, 255, 204, 0.2); box-shadow: 0 4px 15px rgba(0,0,0,0.5); z-index: 10; }
-        .header h1 { font-size: 24px; font-weight: 900; color: var(--primary); text-transform: uppercase; letter-spacing: 2px; text-shadow: 0 0 10px rgba(0, 255, 204, 0.5); }
-        .header p { font-size: 12px; color: var(--muted); margin-top: 4px; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Cairo', sans-serif;
+        }
 
-        .controls { padding: 15px; z-index: 10; display: flex; flex-direction: column; gap: 15px; overflow-y: auto; flex: 1; }
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            background: radial-gradient(circle at top, #001a17 0%, #000000 70%);
+        }
 
-        .card { background: var(--card); border: 1px solid var(--border); border-radius: 15px; padding: 15px; }
-        .card h3 { color: var(--primary); margin-bottom: 10px; font-size: 16px; text-align: center; }
+        /* الصورة / اللوجو */
+        .logo-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 30px 0 10px 0;
+        }
+        .logo-container img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 3px solid var(--primary);
+            box-shadow: 0 0 25px rgba(0, 255, 204, 0.4);
+            object-fit: cover;
+            background-color: #000;
+        }
+
+        /* اسم التطبيق */
+        .app-title {
+            text-align: center;
+            font-size: 28px;
+            font-weight: 900;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-shadow: 0 0 15px rgba(0, 255, 204, 0.6);
+            margin-bottom: 20px;
+        }
+
+        /* الكروت */
+        .controls {
+            padding: 0 20px 20px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+            position: relative;
+            overflow: hidden;
+        }
         
-        .input-box { width: 100%; background: #000; border: 1px solid var(--border); border-radius: 10px; padding: 12px; color: var(--text); font-size: 14px; outline: none; margin-bottom: 10px; }
-        .input-box:focus { border-color: var(--primary); }
+        /* تأثير خط جانبي للكارت */
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0; right: 0;
+            width: 5px; height: 100%;
+            background: var(--primary);
+            box-shadow: 0 0 10px var(--primary);
+        }
 
-        .btn { width: 100%; padding: 14px; border: none; border-radius: 12px; font-weight: 700; font-size: 15px; cursor: pointer; transition: 0.3s; display: flex; justify-content: center; align-items: center; gap: 8px; margin-bottom: 10px; }
-        .btn-start { background: linear-gradient(45deg, #ff0055, #ff4400); color: white; box-shadow: 0 4px 15px rgba(255, 0, 85, 0.4); }
-        .btn-create { background: linear-gradient(45deg, #00b3ff, #00ffcc); color: #000; box-shadow: 0 4px 15px rgba(0, 255, 204, 0.4); }
-        
-        /* اللوجو / الصورة */
-        .logo-container { display: flex; justify-content: center; align-items: center; margin: 20px 0; }
-        .logo-container img { width: 150px; height: 150px; border-radius: 50%; border: 3px solid var(--primary); box-shadow: 0 0 20px rgba(0,255,204,0.4); object-fit: cover; }
+        .card h3 {
+            color: var(--text);
+            margin-bottom: 15px;
+            font-size: 18px;
+            text-align: center;
+            font-weight: 700;
+        }
 
-        .status-bar { background: rgba(0,0,0,0.6); border: 1px solid rgba(0, 255, 204, 0.2); border-radius: 10px; padding: 10px; display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--primary); margin-top: auto; }
-        .status-dot { width: 10px; height: 10px; background: var(--primary); border-radius: 50%; box-shadow: 0 0 10px var(--primary); animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0% { transform: scale(0.95); opacity: 0.7; } 50% { transform: scale(1.1); opacity: 1; } 100% { transform: scale(0.95); opacity: 0.7; } }
+        .input-box {
+            width: 100%;
+            background: #000;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 15px;
+            color: var(--primary);
+            font-size: 14px;
+            outline: none;
+            margin-bottom: 12px;
+            transition: 0.3s;
+            text-align: center;
+        }
+        .input-box:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 10px rgba(0, 255, 204, 0.2);
+        }
+
+        /* الأزرار الجنونية */
+        .btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 900;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            position: relative;
+            overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* زر الإنشاء (سايبر) */
+        .btn-create {
+            background: linear-gradient(135deg, #00b3ff 0%, #00ffcc 100%);
+            color: #000;
+            box-shadow: 0 0 20px rgba(0, 255, 204, 0.4);
+        }
+        .btn-create:active {
+            transform: scale(0.95);
+            box-shadow: 0 0 10px rgba(0, 255, 204, 0.8);
+        }
+
+        /* زر القنص (ناري) */
+        .btn-sniper {
+            background: linear-gradient(135deg, #ff0055 0%, #ff4400 100%);
+            color: #fff;
+            box-shadow: 0 0 20px rgba(255, 0, 85, 0.4);
+        }
+        .btn-sniper:active {
+            transform: scale(0.95);
+            box-shadow: 0 0 10px rgba(255, 0, 85, 0.8);
+        }
+
+        /* زر الفحص (أخضر) */
+        .btn-check {
+            background: linear-gradient(135deg, #00ff55 0%, #00cc44 100%);
+            color: #000;
+            box-shadow: 0 0 20px rgba(0, 255, 85, 0.4);
+        }
+        .btn-check:active {
+            transform: scale(0.95);
+        }
+
+        /* شريط الحالة */
+        .status-bar {
+            background: rgba(0,0,0,0.8);
+            border: 1px solid var(--primary);
+            border-radius: 12px;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-size: 14px;
+            color: var(--primary);
+            margin: 0 20px 20px 20px;
+            font-weight: 700;
+            box-shadow: 0 0 15px rgba(0, 255, 204, 0.2);
+        }
+        .status-dot {
+            width: 12px; height: 12px;
+            background: var(--primary);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--primary);
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(0.9); opacity: 0.7; }
+            50% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(0.9); opacity: 0.7; }
+        }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <h1>aLsband</h1>
-        <p>نظام القنص الذكي</p>
+    <!-- الصورة الخاصة بالتطبيق (غير الرابط لصورة من عندك) -->
+    <div class="logo-container">
+        <img src="https://i.ibb.co/6PZ8Z9x/als-logo.png" alt="aLs band Logo">
     </div>
+
+    <!-- اسم التطبيق -->
+    <div class="app-title">aLs band</div>
 
     <div class="controls">
         
-        <!-- صورة اللوجو -->
-        <div class="logo-container">
-            <!-- غير الرابط هذا لصورة تريدها -->
-            <img src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png" alt="Logo">
-        </div>
-
-        <!-- قسم إنشاء حساب -->
+        <!-- قسم تسجيل الدخول -->
         <div class="card">
-            <h3>👤 إنشاء حساب</h3>
-            <input type="text" id="c-email" class="input-box" placeholder="الإيميل (alshekals93@gmail.com)">
-            <input type="text" id="c-user" class="input-box" placeholder="اسم المستخدم">
-            <input type="password" id="c-pass" class="input-box" placeholder="كلمة المرور">
-            <button class="btn btn-create" onclick="createAccount()">إنشاء الآن</button>
+            <h3>🔐 تسجيل الدخول</h3>
+            <input type="text" id="ig-user" class="input-box" placeholder="اسم المستخدم">
+            <input type="password" id="ig-pass" class="input-box" placeholder="كلمة المرور">
+            <button class="btn btn-create" onclick="login()">تسجيل الدخول</button>
         </div>
 
         <!-- قسم القنص -->
         <div class="card">
-            <h3>🎯 القنص (بلاغات)</h3>
+            <h3>🎯 القنص</h3>
             <input type="text" id="target" class="input-box" placeholder="يوزر الهدف (بدون @)">
             <input type="number" id="count" class="input-box" value="10" placeholder="عدد البلاغات">
-            <button class="btn btn-start" onclick="startSniper()">بدء القنص</button>
+            <button class="btn btn-sniper" onclick="startSniper()">بدء القنص</button>
         </div>
 
-        <!-- شريط الحالة -->
-        <div class="status-bar">
-            <div class="status-dot"></div>
-            <div id="status-text">جاهز للعمل</div>
+        <!-- قسم فحص الحساب -->
+        <div class="card">
+            <h3>🔍 فحص الحساب</h3>
+            <input type="text" id="check-user" class="input-box" placeholder="يوزر الحساب للفحص">
+            <button class="btn btn-check" onclick="checkAccount()">فحص المخالفات</button>
         </div>
+
+    </div>
+
+    <!-- شريط الحالة -->
+    <div class="status-bar">
+        <div class="status-dot"></div>
+        <div id="status-text">جاهز للعمل</div>
     </div>
 
     <script>
@@ -81,29 +246,36 @@
             document.getElementById('status-text').innerText = msg;
         }
 
-        // دالة إنشاء حساب (تفتح المتصفح الخارجي لأن إنستغرام يمنع iframe)
-        function createAccount() {
-            const email = document.getElementById('c-email').value || "alshekals93@gmail.com";
-            const user = document.getElementById('c-user').value;
-            const pass = document.getElementById('c-pass').value;
-
-            if(!user || !pass) return alert("املأ الحقول أولاً");
-
-            updateStatus("⏳ جاري فتح صفحة التسجيل...");
-            // بما إننا ما نكدر نتحكم بالمتصفح، راح نفتح تطبيق إنستغرام مباشرة
-            window.open("https://www.instagram.com/accounts/emailsignup/", "_blank");
-            updateStatus("✅ تم فتح إنستغرام (اكمل التسجيل من هناك)");
+        // دالة تسجيل الدخول (تفتح إنستغرام)
+        function login() {
+            const user = document.getElementById('ig-user').value;
+            const pass = document.getElementById('ig-pass').value;
+            if(!user || !pass) return alert("املأ بيانات الدخول!");
+            
+            updateStatus("⏳ جاري فتح صفحة تسجيل الدخول...");
+            window.open("https://www.instagram.com/accounts/login/", "_blank");
+            updateStatus("✅ تم فتح إنستغرام.");
         }
 
-        // دالة القنص
+        // دالة القنص (تفتح حساب الهدف)
         function startSniper() {
             const target = document.getElementById('target').value.trim().replace('@', '');
-            if (!target) return alert("اكتب يوزر الهدف أولاً!");
+            if (!target) return alert("اكتب يوزر الهدف!");
 
-            updateStatus(`⏳ جاري فتح حساب @${target}...`);
-            // نفتح حساب الهدف في المتصفح الخارجي عشان نقدر نبلغ
+            updateStatus(`⏳ جاري فتح @${target}...`);
             window.open(`https://www.instagram.com/${target}/`, "_blank");
-            updateStatus(`✅ تم فتح الحساب. اضغط على النقاط الثلاث (Report) للتبليغ.`);
+            updateStatus(`✅ تم فتح الحساب. بلغ من هناك.`);
+        }
+
+        // دالة فحص الحساب (تفتح موقع فحص خارجي)
+        function checkAccount() {
+            const user = document.getElementById('check-user').value.trim().replace('@', '');
+            if (!user) return alert("اكتب يوزر الحساب!");
+
+            updateStatus(`⏳ جاري فحص @${user}...`);
+            // بما إننا ما نكدر نفحص بـ HTML، راح نفتح موقع خارجي للفحص
+            window.open(`https://www.instagram.com/${user}/`, "_blank");
+            updateStatus(`✅ تم فتح الحساب للفحص.`);
         }
     </script>
 </body>
