@@ -4,304 +4,106 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>aLsband Sniper</title>
-    <!-- استدعاء خط عربي جميل -->
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #050505;
-            --card: #111111;
-            --primary: #00ffcc;
-            --danger: #ff0055;
-            --text: #ffffff;
-            --muted: #888888;
-            --border: #333333;
+            --bg: #050505; --card: #111111; --primary: #00ffcc; --danger: #ff0055; --text: #ffffff; --muted: #888888; --border: #333333;
         }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
+        body { background-color: var(--bg); color: var(--text); height: 100vh; display: flex; flex-direction: column; overflow: hidden; background: radial-gradient(circle at 50% 0%, #0a1c1a 0%, #050505 70%); }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Cairo', sans-serif;
-        }
+        .header { text-align: center; padding: 15px; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(0, 255, 204, 0.2); box-shadow: 0 4px 15px rgba(0,0,0,0.5); z-index: 10; }
+        .header h1 { font-size: 24px; font-weight: 900; color: var(--primary); text-transform: uppercase; letter-spacing: 2px; text-shadow: 0 0 10px rgba(0, 255, 204, 0.5); }
+        .header p { font-size: 12px; color: var(--muted); margin-top: 4px; }
 
-        body {
-            background-color: var(--bg);
-            color: var(--text);
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            background: radial-gradient(circle at 50% 0%, #0a1c1a 0%, #050505 70%);
-        }
+        .controls { padding: 15px; z-index: 10; display: flex; flex-direction: column; gap: 15px; overflow-y: auto; flex: 1; }
 
-        /* شاشة التحميل */
-        #loader {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: #050505;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            transition: opacity 0.5s ease;
-        }
-        .spinner {
-            width: 60px; height: 60px;
-            border: 4px solid rgba(0, 255, 204, 0.1);
-            border-top-color: var(--primary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-bottom: 20px;
-            box-shadow: 0 0 20px rgba(0, 255, 204, 0.2);
-        }
-        @keyframes spin { 100% { transform: rotate(360deg); } }
+        .card { background: var(--card); border: 1px solid var(--border); border-radius: 15px; padding: 15px; }
+        .card h3 { color: var(--primary); margin-bottom: 10px; font-size: 16px; text-align: center; }
+        
+        .input-box { width: 100%; background: #000; border: 1px solid var(--border); border-radius: 10px; padding: 12px; color: var(--text); font-size: 14px; outline: none; margin-bottom: 10px; }
+        .input-box:focus { border-color: var(--primary); }
 
-        /* الهيدر */
-        .header {
-            text-align: center;
-            padding: 15px;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(0, 255, 204, 0.2);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-            z-index: 10;
-        }
-        .header h1 {
-            font-size: 24px;
-            font-weight: 900;
-            color: var(--primary);
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            text-shadow: 0 0 10px rgba(0, 255, 204, 0.5);
-        }
-        .header p {
-            font-size: 12px;
-            color: var(--muted);
-            margin-top: 4px;
-        }
+        .btn { width: 100%; padding: 14px; border: none; border-radius: 12px; font-weight: 700; font-size: 15px; cursor: pointer; transition: 0.3s; display: flex; justify-content: center; align-items: center; gap: 8px; margin-bottom: 10px; }
+        .btn-start { background: linear-gradient(45deg, #ff0055, #ff4400); color: white; box-shadow: 0 4px 15px rgba(255, 0, 85, 0.4); }
+        .btn-create { background: linear-gradient(45deg, #00b3ff, #00ffcc); color: #000; box-shadow: 0 4px 15px rgba(0, 255, 204, 0.4); }
+        
+        /* اللوجو / الصورة */
+        .logo-container { display: flex; justify-content: center; align-items: center; margin: 20px 0; }
+        .logo-container img { width: 150px; height: 150px; border-radius: 50%; border: 3px solid var(--primary); box-shadow: 0 0 20px rgba(0,255,204,0.4); object-fit: cover; }
 
-        /* لوحة التحكم */
-        .controls {
-            padding: 15px;
-            z-index: 10;
-        }
-        .input-group {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 12px;
-        }
-        .input-box {
-            flex: 1;
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 12px;
-            color: var(--text);
-            font-size: 14px;
-            outline: none;
-            transition: 0.3s;
-        }
-        .input-box:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 10px rgba(0, 255, 204, 0.2);
-        }
-
-        .actions {
-            display: flex;
-            gap: 10px;
-        }
-        .btn {
-            flex: 1;
-            padding: 14px;
-            border: none;
-            border-radius: 12px;
-            font-weight: 700;
-            font-size: 15px;
-            cursor: pointer;
-            transition: 0.3s;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 8px;
-        }
-        .btn-start {
-            background: linear-gradient(45deg, #ff0055, #ff4400);
-            color: white;
-            box-shadow: 0 4px 15px rgba(255, 0, 85, 0.4);
-        }
-        .btn-start:active { transform: scale(0.97); }
-        .btn-stop {
-            background: var(--card);
-            color: var(--muted);
-            border: 1px solid var(--border);
-        }
-
-        /* شريط الحالة */
-        .status-bar {
-            margin-top: 12px;
-            background: rgba(0,0,0,0.6);
-            border: 1px solid rgba(0, 255, 204, 0.2);
-            border-radius: 10px;
-            padding: 10px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 13px;
-            color: var(--primary);
-        }
-        .status-dot {
-            width: 10px; height: 10px;
-            background: var(--primary);
-            border-radius: 50%;
-            box-shadow: 0 0 10px var(--primary);
-            animation: pulse 1.5s infinite;
-        }
-        @keyframes pulse {
-            0% { transform: scale(0.95); opacity: 0.7; }
-            50% { transform: scale(1.1); opacity: 1; }
-            100% { transform: scale(0.95); opacity: 0.7; }
-        }
-
-        /* المتصفح */
-        .browser-container {
-            flex: 1;
-            margin: 0 15px 15px 15px;
-            border-radius: 15px;
-            overflow: hidden;
-            border: 1px solid var(--border);
-            background: white;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-        iframe { width: 100%; height: 100%; border: none; }
-
+        .status-bar { background: rgba(0,0,0,0.6); border: 1px solid rgba(0, 255, 204, 0.2); border-radius: 10px; padding: 10px; display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--primary); margin-top: auto; }
+        .status-dot { width: 10px; height: 10px; background: var(--primary); border-radius: 50%; box-shadow: 0 0 10px var(--primary); animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { transform: scale(0.95); opacity: 0.7; } 50% { transform: scale(1.1); opacity: 1; } 100% { transform: scale(0.95); opacity: 0.7; } }
     </style>
 </head>
 <body>
 
-    <!-- شاشة التحميل -->
-    <div id="loader">
-        <div class="spinner"></div>
-        <h2 style="color: var(--primary); font-weight: 900; letter-spacing: 2px;">aLsband</h2>
-    </div>
-
-    <!-- الهيدر -->
     <div class="header">
         <h1>aLsband</h1>
         <p>نظام القنص الذكي</p>
     </div>
 
-    <!-- لوحة التحكم -->
     <div class="controls">
-        <div class="input-group">
+        
+        <!-- صورة اللوجو -->
+        <div class="logo-container">
+            <!-- غير الرابط هذا لصورة تريدها -->
+            <img src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png" alt="Logo">
+        </div>
+
+        <!-- قسم إنشاء حساب -->
+        <div class="card">
+            <h3>👤 إنشاء حساب</h3>
+            <input type="text" id="c-email" class="input-box" placeholder="الإيميل (alshekals93@gmail.com)">
+            <input type="text" id="c-user" class="input-box" placeholder="اسم المستخدم">
+            <input type="password" id="c-pass" class="input-box" placeholder="كلمة المرور">
+            <button class="btn btn-create" onclick="createAccount()">إنشاء الآن</button>
+        </div>
+
+        <!-- قسم القنص -->
+        <div class="card">
+            <h3>🎯 القنص (بلاغات)</h3>
             <input type="text" id="target" class="input-box" placeholder="يوزر الهدف (بدون @)">
-            <input type="number" id="count" class="input-box" value="10" style="flex: 0.4;" title="عدد البلاغات">
+            <input type="number" id="count" class="input-box" value="10" placeholder="عدد البلاغات">
+            <button class="btn btn-start" onclick="startSniper()">بدء القنص</button>
         </div>
-        <div class="actions">
-            <button class="btn btn-start" onclick="start()">🎯 بدء القنص</button>
-            <button class="btn btn-stop" onclick="stop()">🛑 إيقاف</button>
-        </div>
+
+        <!-- شريط الحالة -->
         <div class="status-bar">
             <div class="status-dot"></div>
-            <div id="status-text">بانتظار الأوامر... (سجل دخولك من المتصفح)</div>
+            <div id="status-text">جاهز للعمل</div>
         </div>
-    </div>
-
-    <!-- المتصفح -->
-    <div class="browser-container">
-        <iframe id="browser" src="https://www.instagram.com/" allow="camera; microphone; autoplay; encrypted-media;"></iframe>
     </div>
 
     <script>
-        let isRunning = false;
-        let stopFlag = false;
-
-        // إخفاء شاشة التحميل بعد ثانيتين
-        window.onload = () => {
-            setTimeout(() => {
-                document.getElementById('loader').style.opacity = '0';
-                setTimeout(() => document.getElementById('loader').style.display = 'none', 500);
-            }, 2000);
-        };
-
         function updateStatus(msg) {
             document.getElementById('status-text').innerText = msg;
         }
 
-        const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+        // دالة إنشاء حساب (تفتح المتصفح الخارجي لأن إنستغرام يمنع iframe)
+        function createAccount() {
+            const email = document.getElementById('c-email').value || "alshekals93@gmail.com";
+            const user = document.getElementById('c-user').value;
+            const pass = document.getElementById('c-pass').value;
 
-        async function start() {
-            if (isRunning) return alert("القنص شغال بالفعل!");
-            
-            const target = document.getElementById('target').value.trim().replace('@', '');
-            const count = parseInt(document.getElementById('count').value) || 10;
+            if(!user || !pass) return alert("املأ الحقول أولاً");
 
-            if (!target) return alert("اكتب يوزر الهدف أولاً!");
-
-            isRunning = true;
-            stopFlag = false;
-            const iframe = document.getElementById('browser');
-
-            updateStatus(`⏳ جاري الانتقال لـ @${target}...`);
-            iframe.src = `https://www.instagram.com/${target}/`;
-            
-            await sleep(4000); // انتظار تحميل الصفحة
-
-            updateStatus(`🎯 بدء القنص (${count} بلاغ)...`);
-
-            for (let i = 1; i <= count; i++) {
-                if (stopFlag) break;
-                updateStatus(`💥 إرسال البلاغ ${i} من ${count}...`);
-
-                try {
-                    // كود يضغط الأزرار تلقائياً
-                    const doc = iframe.contentWindow.document;
-                    let optionsBtn = doc.querySelector('svg[aria-label="Options"]');
-                    
-                    if (optionsBtn) {
-                        optionsBtn.closest('button').click();
-                        await sleep(1500);
-                        
-                        let buttons = Array.from(doc.querySelectorAll('button, div[role="button"]'));
-                        let reportBtn = buttons.find(b => b.innerText.includes('Report'));
-                        if (reportBtn) {
-                            reportBtn.click();
-                            await sleep(1500);
-                            
-                            let spamBtn = buttons.find(b => b.innerText.includes('Spam') || b.innerText.includes('Something about'));
-                            if (spamBtn) {
-                                spamBtn.click();
-                                await sleep(1000);
-                                
-                                let submitBtn = buttons.find(b => b.innerText === 'Submit' || b.innerText === 'Done');
-                                if (submitBtn) {
-                                    submitBtn.click();
-                                    updateStatus(`✅ تم إرسال البلاغ ${i}`);
-                                }
-                            }
-                        }
-                    } else {
-                        updateStatus(`❌ تعذر الوصول للأزرار.`);
-                    }
-                } catch (e) {
-                    updateStatus(`❌ الحماية تمنع التحكم.`);
-                }
-
-                // انتظار 20 ثانية
-                for (let s = 20; s > 0; s--) {
-                    if (stopFlag) break;
-                    updateStatus(`⏳ انتظار (${s}ث) قبل التالي...`);
-                    await sleep(1000);
-                }
-            }
-            isRunning = false;
-            updateStatus(`✅ انتهت العملية.`);
+            updateStatus("⏳ جاري فتح صفحة التسجيل...");
+            // بما إننا ما نكدر نتحكم بالمتصفح، راح نفتح تطبيق إنستغرام مباشرة
+            window.open("https://www.instagram.com/accounts/emailsignup/", "_blank");
+            updateStatus("✅ تم فتح إنستغرام (اكمل التسجيل من هناك)");
         }
 
-        function stop() {
-            stopFlag = true;
-            isRunning = false;
-            updateStatus(`🛑 تم إيقاف القنص.`);
+        // دالة القنص
+        function startSniper() {
+            const target = document.getElementById('target').value.trim().replace('@', '');
+            if (!target) return alert("اكتب يوزر الهدف أولاً!");
+
+            updateStatus(`⏳ جاري فتح حساب @${target}...`);
+            // نفتح حساب الهدف في المتصفح الخارجي عشان نقدر نبلغ
+            window.open(`https://www.instagram.com/${target}/`, "_blank");
+            updateStatus(`✅ تم فتح الحساب. اضغط على النقاط الثلاث (Report) للتبليغ.`);
         }
     </script>
 </body>
